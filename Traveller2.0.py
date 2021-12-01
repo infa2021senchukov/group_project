@@ -134,8 +134,17 @@ class Wall:
                 arrows[j].y = self.y
                 arrows[j].speed = 0
         for k in range(len(units)):
-            pass
-        for k in range(len(units)):
+            k_cor = (units[k].x, units[k].x + units[k].width, units[k].y , units[k].y + units[k].height)
+            w_cor = (self.x, self.x + self.w, self.y , self.y + self.h)
+            if k_cor[0] < w_cor[1] and k_cor[1] > w_cor[1] and not (k_cor[3] < w_cor[2] or k_cor[2] > w_cor[3]):
+                units[k].x = self.x + self.w+1
+            if k_cor[1] > w_cor[0] and k_cor[0] < w_cor[0] and not (k_cor[3] < w_cor[2] or k_cor[2] > w_cor[3]):
+                units[k].x = self.x - units[k].width-1
+            if k_cor[2] < w_cor[3] and k_cor[3] > w_cor[3] and not (k_cor[1] < w_cor[0] or k_cor[0] > w_cor[1]):
+                units[k].y = self.y + self.h+1
+            if k_cor[3] > w_cor[2] and k_cor[2] < w_cor[2] and not (k_cor[1] < w_cor[0] or k_cor[0] > w_cor[1]):
+                units[k].y = self.y - units[k].height-1
+        '''for k in range(len(units)):
             if units[k].x + units[k].width > self.x and units[k].x < self.x + self.w and units[
                 k].y < self.y + self.h and units[k].y + units[k].height > self.y and units[k].orientation == 'right':
                 units[k].x = self.x - units[k].width
@@ -148,7 +157,7 @@ class Wall:
             if units[k].x + units[k].width > self.x and units[k].x < self.x + self.w and units[
                 k].y < self.y + self.h and units[k].y + units[k].height > self.y and units[k].orientation == 'top':
                 units[k].y = self.y + self.h
-
+'''
 
 class Unit:
     def __init__(self, x, y, width, height, Vx, Vy, dV, orientation, hp, weapon, sword, bow, buttons):
@@ -398,7 +407,7 @@ units.append(Unit(300, 300, 50, 40, 0, 0, 10, 'right', 75, None, None, None, Non
 swords.append(Sword(0, 0, 0, 0, 50, 5 * m.pi / 12, 0, units[0]))
 bows.append(Bow(50, 25, 0, 0, units[0]))
 swords.append(Sword(0,0,0,0,0.05,5*m.pi/12,0,enemies[0]))
-walls.append(Wall(500, 600, 300, 300))
+walls.append(Wall(800, 600, 150, 300))
 for i in range(len(enemies)):
     enemies[i].acquire(swords,bows)
 for i in range(len(units)):

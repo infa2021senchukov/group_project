@@ -16,6 +16,8 @@ screen_height=1100
 screen_width=1200
 screen = pygame.display.set_mode((screen_width, screen_height))
 tick=0
+flag = False
+timer = 0
 
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
@@ -128,13 +130,20 @@ class Unit:
         self.bow = bow
         self.buttons = buttons
         self.points = points
-    def patrol(self):
+    def patrol(self,flag,timer):
         self.Vx=np.sign(points[points[0]][0]-self.x)*self.dV
         self.Vy=np.sign(points[points[0]][1]-self.y)*self.dV
         if self.Vx ==0 and self.Vy == 0:
             self.points[0] = self.points[0] % (len(self.points)-1)
             self.points[0] += 1
-            
+        if self.x +self.width > units[0].x and self.x< units[0].x + units[0].width and self.y < units[0].y+units[0].height and self.y+self.height > units[0].y and flag == False:
+            units[0].hp -= 70
+            flag = True
+            timer = tick
+        if tick - timer == 50:
+            timer = 0
+            flag = False
+        return((flag,timer))
     def stay(self):
         '''
         отрисовываем танк
@@ -145,7 +154,7 @@ class Unit:
         if self.weapon == 'sword':
             self.hold_a_sword()
         if self.weapon == 'bow':
-            self.hold_a_bow()    
+            self.hold_a_bow()
     def acquire (self,swords,bows):
         for i in range(len(swords)):
             if self == swords[i].owner:
@@ -271,6 +280,8 @@ for i in range(len(units)):
     units[i].acquire(swords,bows)
 while not finished:
     clock.tick(FPS)
+    if units[0].hp <=0:
+        finished = True
     for i in range(len(walls)):
         walls[i].stay()
         walls[i].collision(arrows,units)
@@ -279,7 +290,7 @@ while not finished:
         units[i].move(walls)
         units[i].damage(arrows,swords,units)
     for i in range(1,len(units),1):
-        units[i].patrol()
+        (flag,timer)=units[i].patrol(flag,timer)
     for i in range (len(arrows)):
         arrows[i].fly()    
     for event in pygame.event.get():

@@ -8,6 +8,7 @@ from pygame.draw import arc
 from random import randint
 import math as m
 import pygame.freetype
+import numpy as np
 pygame.init()
 
 FPS = 60
@@ -29,6 +30,7 @@ bows=[]
 arrows=[]
 units=[]
 walls=[]
+points=[1,(300,300),(300,600),(700,600),(700,0)]
 class Sword:
     def __init__(self,x0,y0,x1,y1,l,phi,sharp,owner):
         self.x0 = x0
@@ -84,7 +86,7 @@ class Arrow:
             self.y=self.y+self.speed
         elif self.orientation == 'bot':
             line(screen,(0,0,0),(self.x,self.y),(self.x,self.y-20),3)
-            self.y=self.y+self.speed
+            self.y=self.y+self.speed        
 class Wall:
     def __init__(self,x,y,w,h):
         self.x = x
@@ -111,7 +113,7 @@ class Wall:
             
                                                     
 class Unit:
-    def __init__(self,x,y,width,height,Vx,Vy,dV,orientation,hp,weapon,sword,bow,buttons):
+    def __init__(self,x,y,width,height,Vx,Vy,dV,orientation,hp,weapon,sword,bow,buttons,points):
         self.x=x
         self.y=y
         self.width=width
@@ -124,7 +126,15 @@ class Unit:
         self.weapon = weapon
         self.sword = sword
         self.bow = bow
-        self.buttons=buttons
+        self.buttons = buttons
+        self.points = points
+    def patrol(self):
+        self.Vx=np.sign(points[points[0]][0]-self.x)*self.dV
+        self.Vy=np.sign(points[points[0]][1]-self.y)*self.dV
+        if self.Vx ==0 and self.Vy == 0:
+            self.points[0] = self.points[0] % (len(self.points)-1)
+            self.points[0] += 1
+            
     def stay(self):
         '''
         отрисовываем танк
@@ -252,8 +262,8 @@ class Unit:
 pygame.display.update()
 clock = pygame.time.Clock()
 finished = False
-units.append(Unit(10,300,50,40,0,0,5,'right',75,'sword',None,None,('w','s','a','d')))
-units.append(Unit(300,300,50,40,0,0,10,'right',75,None,None,None,None))
+units.append(Unit(10,300,50,40,0,0,5,'right',75,'sword',None,None,('w','s','a','d'),None))
+units.append(Unit(300,300,50,40,0,0,5,'right',75,None,None,None,None,points))
 swords.append(Sword(0,0,0,0,50,5*m.pi/12,0,units[0]))
 bows.append(Bow(50,25,0,0,units[0]))
 walls.append(Wall(500,200,100,300))
@@ -268,6 +278,8 @@ while not finished:
         units[i].stay()
         units[i].move(walls)
         units[i].damage(arrows,swords,units)
+    for i in range(1,len(units),1):
+        units[i].patrol()
     for i in range (len(arrows)):
         arrows[i].fly()    
     for event in pygame.event.get():

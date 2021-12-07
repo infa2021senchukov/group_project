@@ -1,3 +1,4 @@
+import bg as bg
 import pygame
 import math as m
 from pygame.draw import circle
@@ -5,6 +6,7 @@ from pygame.draw import polygon
 from pygame.draw import rect
 from pygame.draw import line
 from pygame.draw import arc
+from grafics import *
 from random import randint
 import math as m
 import pygame.freetype
@@ -113,7 +115,7 @@ class Wall:
         self.h = h
 
     def stay(self):
-        rect(screen, 'grey', (self.x, self.y, self.w, self.h))
+        rect(screen, (50, 50, 50), (self.x, self.y, self.w, self.h))
 
     def collision(self, arrows, units):
         for j in range(len(arrows)):
@@ -177,10 +179,10 @@ class Unit:
 
     def stay(self):
 
-        rect(screen, 'grey', (self.x, self.y, self.width, self.height))
-        rect(screen, 'green',
+        rect(screen, (50, 59, 50), (self.x, self.y, self.width, self.height))
+        rect(screen, (0, 250, 0),
              (self.x + 0.25 * self.width, self.y + self.height + 5, self.width * 0.5 * self.hp / 100 + 1, 10))
-        rect(screen, 'red', (self.x + 0.25 * self.width + self.width * 0.5 * self.hp / 100, self.y + self.height + 5,
+        rect(screen, (250, 0, 0), (self.x + 0.25 * self.width + self.width * 0.5 * self.hp / 100, self.y + self.height + 5,
                              self.width * 0.5 * (100 - self.hp) / 100 + 1, 10))
         if self.weapon == 'sword':
             self.hold_a_sword()
@@ -301,9 +303,9 @@ class Unit:
             arc(screen, (0, 0, 0), (
             self.x + self.width / 2 - self.bow.h / 2, self.y + self.height - self.bow.w / 2, self.bow.h, self.bow.w),
                 m.pi, 0, 3)
-        rect(screen, 'yellow',
+        rect(screen, (255, 255, 0),
              (self.x + 0.25 * self.width, self.y + self.height + 20, self.width * 0.5 * self.bow.tension / 100 + 1, 10))
-        rect(screen, 'grey', (
+        rect(screen, (50, 50, 50), (
         self.x + 0.25 * self.width + self.width * 0.5 * self.bow.tension / 100, self.y + self.height + 20,
         self.width * 0.5 * (100 - self.bow.tension) / 100 + 1, 10))
 
@@ -339,9 +341,9 @@ class Enemy(Unit):
         '''
         отрисовываем врага
         '''
-        rect(screen,'red',(self.x,self.y,self.width,self.height))
-        rect(screen,'green',(self.x+0.25*self.width,self.y+self.height+5,self.width*0.5*self.hp/100+1,10))
-        rect(screen,'red',(self.x+0.25*self.width+self.width*0.5*self.hp/100,self.y+self.height+5,self.width*0.5*(100-self.hp)/100+1,10))
+        rect(screen, (250, 0, 0), (self.x,self.y,self.width,self.height))
+        rect(screen, (0, 250, 0), (self.x+0.25*self.width,self.y+self.height+5,self.width*0.5*self.hp/100+1,10))
+        rect(screen, (250, 0, 0), (self.x+0.25*self.width+self.width*0.5*self.hp/100,self.y+self.height+5,self.width*0.5*(100-self.hp)/100+1,10))
         if self.weapon == 'sword':
             self.hold_a_sword()
         if self.weapon == 'bow':
@@ -398,6 +400,8 @@ class Enemy(Unit):
         if self.hp<=0:
             enemies.remove(enemies[i])
 
+bg_im = pygame.image.load("bgim.png").convert()
+
 pygame.display.update()
 clock = pygame.time.Clock()
 finished = False
@@ -412,7 +416,10 @@ for i in range(len(enemies)):
     enemies[i].acquire(swords,bows)
 for i in range(len(units)):
     units[i].acquire(swords, bows)
+
 while not finished:
+    screen.blit(bg_im, [0, 0])
+
     clock.tick(FPS)
     for i in range(len(walls)):
         walls[i].stay()

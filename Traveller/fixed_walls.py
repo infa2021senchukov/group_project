@@ -267,7 +267,10 @@ class Unit:
                 swords[k].sharp = 0
         if self.hp<=0:
             units.remove(units[i])
-            
+
+
+bg_im = pygame.image.load("bgim.png").convert()
+
 pygame.display.update()
 clock = pygame.time.Clock()
 finished = False
@@ -279,6 +282,7 @@ walls.append(Wall(500,200,100,300))
 for i in range(len(units)):
     units[i].acquire(swords,bows)
 while not finished:
+    screen.blit(bg_im, [0, 0])
     clock.tick(FPS)
     if units[0].hp <=0:
         finished = True

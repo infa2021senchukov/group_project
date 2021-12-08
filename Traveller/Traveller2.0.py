@@ -6,7 +6,6 @@ from pygame.draw import polygon
 from pygame.draw import rect
 from pygame.draw import line
 from pygame.draw import arc
-from grafics import *
 from random import randint
 import math as m
 import pygame.freetype
@@ -400,7 +399,7 @@ class Enemy(Unit):
         if self.hp<=0:
             enemies.remove(enemies[i])
 
-bg_im = pygame.image.load("bgim.png").convert()
+
 
 pygame.display.update()
 clock = pygame.time.Clock()
@@ -418,7 +417,7 @@ for i in range(len(units)):
     units[i].acquire(swords, bows)
 
 while not finished:
-    screen.blit(bg_im, [0, 0])
+
 
     clock.tick(FPS)
     for i in range(len(walls)):

@@ -128,8 +128,8 @@ class Unit:
         self.buttons = buttons
         self.points = points
     def patrol(self,flag,timer):
-        self.Vx=np.sign(self.points[self.points[0]][0]-self.x)*self.dV
-        self.Vy=np.sign(self.points[self.points[0]][1]-self.y)*self.dV
+        self.Vx=np.sign((self.points[self.points[0]][0]-self.x)//10)*self.dV
+        self.Vy=np.sign((self.points[self.points[0]][1]-self.y)//10)*self.dV
         if self.Vx ==0 and self.Vy == 0:
             self.points[0] = self.points[0] % (len(self.points)-1)
             self.points[0] += 1
@@ -140,6 +140,13 @@ class Unit:
         if tick - timer == 50:
             timer = 0
             flag = False
+        if self.weapon > 0:
+            self.points = [1,(units[0].x,units[0].y)]
+        if self.x +self.width > units[0].x -200 and self.x< units[0].x + units[0].width +200 and self.y < units[0].y+units[0].height +200 and self.y+self.height > units[0].y - 200:
+            self.weapon = 1
+        if self.weapon == 1 and not (self.x +self.width > units[0].x -350 and self.x< units[0].x + units[0].width +350 and self.y < units[0].y+units[0].height +350 and self.y+self.height > units[0].y - 350):
+            self.weapon = 0
+            self.points = units_data[self.buttons][6]
         return((flag,timer))
     def stay(self):
         '''
@@ -253,6 +260,7 @@ class Unit:
         for j in range(len(arrows)-1,-1,-1):
             if arrows[j].x > self.x and arrows[j].x < self.x+self.width and arrows[j].y>self.y and arrows[j].y<self.y+self.height and arrows[j].speed != 0:
                 self.hp -= abs(arrows[j].speed)
+                self.weapon = 2
                 arrows.remove(arrows[j])
         if ((sword.x1 > self.x and sword.x1 < self.x+self.width and sword.y1>self.y and sword.y1<self.y+self.height) or
             ((sword.x1+sword.x0)/2 > self.x and (sword.x1+sword.x0)/2 < self.x+self.width and (sword.y1+sword.y0)/2>self.y and (sword.y1+sword.y0)/2<self.y+self.height)) and self != sword.owner and sword.sharp == 1:
@@ -274,17 +282,17 @@ def build_the_level(input_filename):
     for i in range (len(walls_data)):
         walls.append(Wall(walls_data[i][0],walls_data[i][1],walls_data[i][2],walls_data[i][3]))
     for i in range (len(units_data)):
-        units.append(Unit(units_data[i][0],units_data[i][1],units_data[i][2],units_data[i][3],0,0,units_data[i][4],'right',units_data[i][5],None,None,None,None,units_data[i][6]))
-    return((walls,units,sword,bow))
-def refresh(input_filename,walls,units,sword,bow,arrows):
+        units.append(Unit(units_data[i][0],units_data[i][1],units_data[i][2],units_data[i][3],0,0,units_data[i][4],'right',units_data[i][5],0,None,None,i,units_data[i][6]))
+    return((walls,units,sword,bow,units_data))
+def refresh(input_filename,walls,units,sword,bow,arrows,units_data):
     if len(units) == 1 and units[0].x>screen_width-units[0].width-1:
         arrows=[]
         Vx=units[0].Vx
         Vy=units[0].Vy
-        (walls,units,sword,bow) = build_the_level(input_filename)
+        (walls,units,sword,bow,units_data) = build_the_level(input_filename)
         units[0].Vx=Vx
         units[0].Vy=Vy
-    return((walls,units,sword,bow,arrows))
+    return((walls,units,sword,bow,arrows,units_data))
 
 def sustain_walls(walls):
     for i in range(len(walls)):
@@ -310,7 +318,7 @@ def sustain_all(units,walls,arrows,sword,flag,timer):
 pygame.display.update()
 clock = pygame.time.Clock()
 finished = False
-(walls,units,sword,bow) = build_the_level("level_"+str(randint(1,2))+".txt")
+(walls,units,sword,bow,units_data) = build_the_level("level_"+str(randint(1,2))+".txt")
 while not finished:
     clock.tick(FPS)
     (flag,timer) = sustain_all(units,walls,arrows,sword,flag,timer)
@@ -332,7 +340,7 @@ while not finished:
             units[0].change_weapon()
         elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
             bow.draw()
-    (walls,units,sword,bow,arrows) = refresh("level_"+str(randint(1,2))+".txt",walls,units,sword,bow,arrows)        
+    (walls,units,sword,bow,arrows,units_data) = refresh("level_"+str(randint(1,2))+".txt",walls,units,sword,bow,arrows,units_data)        
     pygame.display.update()
     screen.fill((255,255,255))
     tick=tick+1

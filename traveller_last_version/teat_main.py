@@ -19,7 +19,8 @@ screen = pygame.display.set_mode((screen_width, screen_height))
 tick = 0
 flag = False
 timer = 0
-
+hero_image = pygame.image.load("hero.png").convert()
+hero_image.set_colorkey((0, 0, 0))
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 YELLOW = (255, 255, 0)
@@ -177,7 +178,7 @@ class Unit:
         '''
         отрисовываем танк
         '''
-        rect(screen, 'grey', (self.x, self.y, self.width, self.height))
+        rect(screen, 'grey', (self.x, self.y, self.width, self.height), 0)
         rect(screen, 'green',
              (self.x + 0.25 * self.width, self.y + self.height + 5, self.width * 0.5 * self.hp / 100 + 1, 10))
         rect(screen, 'red', (self.x + 0.25 * self.width + self.width * 0.5 * self.hp / 100, self.y + self.height + 5,
@@ -328,7 +329,7 @@ def build_the_level(input_filename):
     walls = []
     units = []
     units.append(
-        Unit(10, screen_height / 2, 50, 20, 0, 0, 5, 'right', 100, 'sword', None, None, ('w', 's', 'a', 'd'), None))
+        Unit(10, screen_height / 2, 50, 50, 0, 0, 5, 'right', 100, 'sword', None, None, ('w', 's', 'a', 'd'), None))
     sword = Sword(0, 0, 0, 0, 50, 5 * m.pi / 12, 0, units[0])
     bow = Bow(50, 25, 0, 0, units[0])
     units[0].sword = sword
@@ -411,5 +412,6 @@ while not finished:
                                                              sword, bow, arrows, units_data)
     pygame.display.update()
     screen.fill((255, 255, 255))
+    screen.blit(hero_image, [units[0].x, units[0].y])
     tick = tick + 1
 pygame.quit()

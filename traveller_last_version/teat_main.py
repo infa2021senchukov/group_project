@@ -1,26 +1,18 @@
 import pygame
 import math as m
-from pygame.draw import circle
-from pygame.draw import polygon
-from pygame.draw import rect
-from pygame.draw import line
-from pygame.draw import arc
+from pygame.draw import circle, polygon, rect, line, arc
 from random import randint
 import math as m
 import pygame.freetype
 import numpy as np
 from traveller_input import *
+from vis import *
 
 pygame.init()
-FPS = 60
-screen_height = 1000
-screen_width = 1200
-screen = pygame.display.set_mode((screen_width, screen_height))
+FPS = 30
 tick = 0
 flag = False
 timer = 0
-hero_image = pygame.image.load("hero.png").convert()
-hero_image.set_colorkey((0, 0, 0))
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 YELLOW = (255, 255, 0)
@@ -131,8 +123,9 @@ class Wall:
                     arrows[j].speed = 0
 
 
-class Unit:
+class Unit():
     def __init__(self, x, y, width, height, Vx, Vy, dV, orientation, hp, weapon, sword, bow, buttons, points):
+
         self.x = x
         self.y = y
         self.width = width
@@ -178,7 +171,7 @@ class Unit:
         '''
         отрисовываем танк
         '''
-        rect(screen, 'grey', (self.x, self.y, self.width, self.height), 0)
+        #rect(screen, 'grey', (self.x, self.y, self.width, self.height), 0)
         rect(screen, 'green',
              (self.x + 0.25 * self.width, self.y + self.height + 5, self.width * 0.5 * self.hp / 100 + 1, 10))
         rect(screen, 'red', (self.x + 0.25 * self.width + self.width * 0.5 * self.hp / 100, self.y + self.height + 5,
@@ -329,7 +322,7 @@ def build_the_level(input_filename):
     walls = []
     units = []
     units.append(
-        Unit(10, screen_height / 2, 50, 50, 0, 0, 5, 'right', 100, 'sword', None, None, ('w', 's', 'a', 'd'), None))
+        Unit(10, screen_height / 2, 30, 50, 0, 0, 5, 'right', 100, 'sword', None, None, ('w', 's', 'a', 'd'), None))
     sword = Sword(0, 0, 0, 0, 50, 5 * m.pi / 12, 0, units[0])
     bow = Bow(50, 25, 0, 0, units[0])
     units[0].sword = sword
@@ -343,6 +336,25 @@ def build_the_level(input_filename):
                  'right', units_data[i][5], 0, None, None, i, units_data[i][6]))
     return ((walls, units, sword, bow, units_data))
 
+def vis():
+    global hero_image, back_counter, front_counter, left_counter, right_counter
+    if units[0].orientation == 'top' and units[0].Vy != 0:
+        hero_image = back_pic[back_counter]
+        back_counter = (back_counter + 1) % len(back_pic)
+        screen.blit(hero_image, [units[0].x, units[0].y])
+    if units[0].orientation == 'bot' and units[0].Vy != 0:
+        hero_image = front_pic[front_counter]
+        front_counter = (front_counter + 1) % len(front_pic)
+        screen.blit(hero_image, [units[0].x, units[0].y])
+        print(front_counter)
+    if units[0].orientation == 'left' and (units[0].Vy != 0 or units[0].Vx != 0) :
+        hero_image = left_pic[left_counter]
+        left_counter = (left_counter + 1) % len(left_pic)
+        screen.blit(hero_image, [units[0].x, units[0].y])
+    if units[0].orientation == 'right' and (units[0].Vy != 0 or units[0].Vx != 0):
+        hero_image = right_pic[right_counter]
+        right_counter = (right_counter + 1) % len(right_pic)
+        screen.blit(hero_image, [units[0].x, units[0].y])
 
 def refresh(input_filename, walls, units, sword, bow, arrows, units_data):
     if len(units) == 1 and units[0].x > screen_width - units[0].width - 1:
@@ -390,6 +402,7 @@ finished = False
 while not finished:
     clock.tick(FPS)
     (flag, timer) = sustain_all(units, walls, arrows, sword, flag, timer)
+
     if units[0].hp <= 0:
         finished = True
     for event in pygame.event.get():
@@ -412,6 +425,6 @@ while not finished:
                                                              sword, bow, arrows, units_data)
     pygame.display.update()
     screen.fill((255, 255, 255))
-    screen.blit(hero_image, [units[0].x, units[0].y])
+    vis()
     tick = tick + 1
 pygame.quit()

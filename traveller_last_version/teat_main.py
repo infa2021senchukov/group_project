@@ -335,25 +335,32 @@ def build_the_level(input_filename):
                  'right', units_data[i][5], 0, None, None, i, units_data[i][6]))
     return ((walls, units, sword, bow, units_data))
 
-def vis():
+def vis_unit():
     global hero_image, back_counter, front_counter, left_counter, right_counter
-    if units[0].orientation == 'top' and units[0].Vy != 0:
-        hero_image = back_pic[back_counter]
-        back_counter = (back_counter + 1) % len(back_pic)
-        screen.blit(hero_image, [units[0].x, units[0].y])
-    if units[0].orientation == 'bot' and units[0].Vy != 0:
-        hero_image = front_pic[front_counter]
-        front_counter = (front_counter + 1) % len(front_pic)
-        screen.blit(hero_image, [units[0].x, units[0].y])
-        print(front_counter)
-    if units[0].orientation == 'left' and (units[0].Vy != 0 or units[0].Vx != 0) :
-        hero_image = left_pic[left_counter]
-        left_counter = (left_counter + 1) % len(left_pic)
-        screen.blit(hero_image, [units[0].x, units[0].y])
-    if units[0].orientation == 'right' and (units[0].Vy != 0 or units[0].Vx != 0):
-        hero_image = right_pic[right_counter]
-        right_counter = (right_counter + 1) % len(right_pic)
-        screen.blit(hero_image, [units[0].x, units[0].y])
+    if units[0].Vy != 0 or units[0].Vx != 0:
+        if units[0].orientation == 'top' and units[0].Vy != 0:
+            hero_image = back_pic[back_counter]
+            back_counter = (back_counter + 1) % len(back_pic)
+        elif units[0].orientation == 'bot' and units[0].Vy != 0:
+            hero_image = front_pic[front_counter]
+            front_counter = (front_counter + 1) % len(front_pic)
+        elif units[0].orientation == 'left':
+            hero_image = left_pic[left_counter]
+            left_counter = (left_counter + 1) % len(left_pic)
+        elif units[0].orientation == 'right':
+            hero_image = right_pic[right_counter]
+            right_counter = (right_counter + 1) % len(right_pic)
+    else:
+        if units[0].orientation == 'top' and units[0].Vy != 0:
+            hero_image = back_pic[1]
+        elif units[0].orientation == 'bot' and units[0].Vy != 0:
+            hero_image = front_pic[front_counter]
+            print(front_counter)
+        elif units[0].orientation == 'left':
+            hero_image = left_pic[left_counter]
+        elif units[0].orientation == 'right':
+            hero_image = right_pic[right_counter]
+    screen.blit(hero_image, [units[0].x, units[0].y])
 
 def refresh(input_filename, walls, units, sword, bow, arrows, units_data):
     if len(units) == 1 and units[0].x > screen_width - units[0].width - 1:
@@ -401,7 +408,6 @@ finished = False
 while not finished:
     clock.tick(FPS)
     (flag, timer) = sustain_all(units, walls, arrows, sword, flag, timer)
-
     if units[0].hp <= 0:
         finished = True
     for event in pygame.event.get():
@@ -424,6 +430,6 @@ while not finished:
                                                              sword, bow, arrows, units_data)
     pygame.display.update()
     screen.fill((255, 255, 255))
-    vis()
+    vis_unit()
     tick = tick + 1
 pygame.quit()

@@ -1,5 +1,4 @@
-import pygame
-import math as m
+
 from pygame.draw import circle, polygon, rect, line, arc
 from random import randint
 import math as m

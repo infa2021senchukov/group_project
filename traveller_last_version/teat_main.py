@@ -1,5 +1,4 @@
-
-from pygame.draw import circle, polygon, rect, line, arc
+from pygame.draw import rect, line, arc
 from random import randint
 import math as m
 import pygame.freetype
@@ -338,10 +337,10 @@ def build_the_level(input_filename):
 def vis_unit():
     global hero_image, back_counter, front_counter, left_counter, right_counter
     if units[0].Vy != 0 or units[0].Vx != 0:
-        if units[0].orientation == 'top' and units[0].Vy != 0:
+        if units[0].orientation == 'top':
             hero_image = back_pic[back_counter]
             back_counter = (back_counter + 1) % len(back_pic)
-        elif units[0].orientation == 'bot' and units[0].Vy != 0:
+        elif units[0].orientation == 'bot':
             hero_image = front_pic[front_counter]
             front_counter = (front_counter + 1) % len(front_pic)
         elif units[0].orientation == 'left':

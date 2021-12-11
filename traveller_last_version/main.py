@@ -23,6 +23,13 @@ arrows = []
 units = []
 
 class Sword:
+    '''Класс меча:
+    x0,y0 - координата начала
+    x1, y1 - координаиа конца
+    l - длина
+    phi - угол поворота
+    sharp - статус (происходит удар или нет)
+    owner - герой (тот, кому принадлежит меч)'''
     def __init__(self, x0, y0, x1, y1, l, phi, sharp, owner):
         self.x0 = x0
         self.y0 = y0
@@ -34,10 +41,16 @@ class Sword:
         self.owner = owner
 
     def strike(self):
+        '''удар'''
         self.phi = 5 * m.pi / 12
         self.sharp = 1
 
 class Bow:
+    '''Класс меча:
+    w - ширина лука
+    h - высота лука
+    tension - параметр заряженности лука
+    owner - герой (тот, кому принадлежит лук)'''
     def __init__(self, w, h, phi, tension, owner):
         self.h = h
         self.w = w
@@ -46,10 +59,12 @@ class Bow:
         self.owner = owner
 
     def pull(self):
+        '''начять заряжать выстрел'''
         if self.owner.weapon == 'bow':
             self.tension = 0.1
 
     def draw(self):
+        '''выпустить стрелу'''
         if self.owner.weapon == 'bow':
             if self.owner.orientation == 'right':
                 arrows.append(
@@ -72,6 +87,10 @@ class Bow:
 
 
 class Arrow:
+    '''Класс стрелы:
+    x,y - координаты стрелы
+    orientation - направление полета
+    speed - скорость полета'''
     def __init__(self, x, y, orientation, speed):
         self.x = x
         self.y = y
@@ -79,6 +98,7 @@ class Arrow:
         self.speed = speed
 
     def fly(self):
+        '''осуществляет движение стрелы'''
         if self.orientation == 'right':
             line(screen, (0, 0, 0), (self.x, self.y), (self.x - 20, self.y), 3)
             self.x = self.x + self.speed
@@ -94,6 +114,10 @@ class Arrow:
 
 
 class Wall:
+    '''Класс стен:
+    x,y - координаты стены
+    w - ширина стены
+    h - высота стены'''
     '''
     дизайн стен
     '''
@@ -105,9 +129,11 @@ class Wall:
         self.h = h
 
     def stay(self):
+        '''будет удалено'''
         rect(screen, 'grey', (self.x, self.y, self.w, self.h))
 
     def collision(self, arrows, units):
+        '''проверка столкновения со стенами стрел'''
         for j in range(len(arrows)):
             if arrows[j].x < self.x + self.w and arrows[j].x > self.x and arrows[j].y < self.y + self.h and arrows[
                 j].y > self.y:
@@ -126,6 +152,21 @@ class Wall:
 
 
 class Unit():
+    '''Класс существ:
+    x,y - координаты юнита
+    width - ширина юнита
+    height - ширина юнита
+    Vx, Vy - текущие значения скорости по осям
+    dV - скорость, которую герой получает при нажатии на кнопку
+    orientation - направление взгляда юнита
+    hp - здоровье юнита
+    weapon - для главного героя оружие, которое он дердит в руках, для врагов статус преследования: 0 - не преследуют,
+    1 - преседуют, так как герой подошел слишком близко, 2 - преследуют, так как в них попала стрела
+    sword - объект класса Sword, меч героя
+    bow - объект класса Bow, лук героя
+    buttons - кнопки управления героем
+    points - точки маршрута, которые патрулирует враг    
+    '''
     def __init__(self, x, y, width, height, Vx, Vy, dV, orientation, hp, weapon, sword, bow, buttons, points):
 
         self.x = x
@@ -144,6 +185,8 @@ class Unit():
         self.points = points
 
     def patrol(self, flag, timer):
+        '''функция патрулирования врагом территории, позволяющая также ему преследовать героя,
+            герою после получения урона дает неуязвимость на короткое время'''
         self.Vx = np.sign((self.points[self.points[0]][0] - self.x) // 10) * self.dV
         self.Vy = np.sign((self.points[self.points[0]][1] - self.y) // 10) * self.dV
         if self.Vx == 0 and self.Vy == 0:
@@ -171,9 +214,8 @@ class Unit():
 
     def stay(self):
         '''
-        отрисовываем танк
+        отрисовывает полоски здоровья, выполняет функции связанные с поддержкой меча и лука
         '''
-        #rect(screen, 'grey', (self.x, self.y, self.width, self.height), 0)
         rect(screen, 'green',
              (self.x + 0.25 * self.width, self.y + self.height + 5, self.width * 0.5 * self.hp / 100 + 1, 10))
         rect(screen, 'red', (self.x + 0.25 * self.width + self.width * 0.5 * self.hp / 100, self.y + self.height + 5,
@@ -185,7 +227,7 @@ class Unit():
 
     def change_direction(self, event, walls):
         '''
-        передвигаем юнита
+        меняет скорость и направление юнита
         '''
         if event.type == pygame.KEYDOWN:
             if event.unicode == str(self.buttons[0]):
@@ -211,6 +253,9 @@ class Unit():
                 self.Vy -= self.dV
 
     def move(self, walls):
+        '''
+        передвигает юнита, если нет столкновений со стенами
+        '''
         motion_matrix = [-len(walls) + 1, -len(walls) + 1]
         for k in range(len(walls)):
             if self.Vx > 0 and not (
@@ -243,6 +288,9 @@ class Unit():
             self.x = 0
 
     def hold_a_sword(self):
+        '''
+        передвигает юните, если нет столкновений со стенами
+        '''
         if self.orientation == 'right':
             self.sword.x0 = self.x + self.width
             self.sword.y0 = self.y + self.height / 2
@@ -272,6 +320,9 @@ class Unit():
             self.sword.phi = 5 * m.pi / 12
 
     def hold_a_bow(self):
+        '''
+        изменяет натяжение лука, отрисовывает полоску натяжения
+        '''
         if (self.bow.tension > 0) and self.bow.tension < 100:
             self.bow.tension += 2.5
         if self.orientation == 'right':
@@ -296,12 +347,18 @@ class Unit():
         self.width * 0.5 * (100 - self.bow.tension) / 100 + 1, 10))
 
     def change_weapon(self):
+        '''
+        меняет оружие героя
+        '''
         if self.weapon == 'sword':
             self.weapon = 'bow'
         elif self.weapon == 'bow':
             self.weapon = 'sword'
 
     def damage(self, arrows, sword, units, i):
+        '''
+        получение всеми юнитами урона от стрел, меча и удаление их в случае смерти
+        '''
         for j in range(len(arrows) - 1, -1, -1):
             if arrows[j].x > self.x and arrows[j].x < self.x + self.width and arrows[j].y > self.y and arrows[
                 j].y < self.y + self.height and arrows[j].speed != 0:
@@ -321,6 +378,9 @@ class Unit():
 
 
 def build_the_level(input_filename):
+    '''
+    создает уровней по информации из input
+    '''
     walls = []
     units = []
     units.append(
@@ -342,6 +402,9 @@ def build_the_level(input_filename):
 
 
 def refresh(input_filename, walls, units, sword, bow, arrows, units_data):
+    '''
+    осуществляет переход на новый уровень
+    '''
     if len(units) == 1 and units[0].x > screen_width - units[0].width - 1:
         arrows = []
         Vx = units[0].Vx
@@ -352,12 +415,18 @@ def refresh(input_filename, walls, units, sword, bow, arrows, units_data):
     return ((walls, units, sword, bow, arrows, units_data))
 
 def sustain_walls(walls):
+    '''
+    поддерживает существование стен
+    '''
     for i in range(len(walls)):
         walls[i].stay()
         walls[i].collision(arrows, units)
 
 
 def sustain_units(units, walls, arrows, sword, flag, timer):
+    '''
+    поддерживает существование юнитов
+    '''
     for i in range(len(units) - 1, -1, -1):
         units[i].stay()
         units[i].move(walls)
@@ -368,11 +437,17 @@ def sustain_units(units, walls, arrows, sword, flag, timer):
 
 
 def sustain_arrows(arrows):
+    '''
+    поддерживает существование стрел
+    '''
     for i in range(len(arrows)):
         arrows[i].fly()
 
 
 def sustain_all(units, walls, arrows, sword, flag, timer):
+    '''
+    поддерживает существование всех объектов уровня
+    '''
     sustain_walls(walls)
     (flag, timer) = sustain_units(units, walls, arrows, sword, flag, timer)
     sustain_arrows(arrows)
@@ -387,7 +462,7 @@ bg_im = pygame.image.load("backgroundtraveller.png").convert()
 pygame.display.update()
 clock = pygame.time.Clock()
 finished = False
-(walls, units, sword, bow, units_data) = build_the_level("level_" + str(randint(1, 1)) + ".txt")
+(walls, units, sword, bow, units_data) = build_the_level("level_" + str(randint(1, 2)) + ".txt")
 while not finished:
     clock.tick(FPS)
     (flag, timer) = sustain_all(units, walls, arrows, sword, flag, timer)

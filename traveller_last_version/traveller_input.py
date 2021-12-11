@@ -1,4 +1,7 @@
 def read_data_from_file(input_filename):
+    '''
+    считывает данные из файла
+    '''
     walls_data=[]
     walls_number=0
     units_data=[]
@@ -19,6 +22,9 @@ def read_data_from_file(input_filename):
     return((walls_data,units_data))
                 
 def parse_wall_parameters(line, walls_data, walls_number):
+    '''
+    считывает данные класса стен
+    '''
     split = line.split()
     for i in range(1,len(split)):
         split[i] = int(split[i])
@@ -26,6 +32,9 @@ def parse_wall_parameters(line, walls_data, walls_number):
         walls_data[walls_number][i-1]=split[i]
         
 def parse_unit_parameters(line, units_data, units_number):
+    '''
+    считывает данные класса юнитов
+    '''   
     split = line.split()
     unit_points=[]
     for i in range(1,len(split)):

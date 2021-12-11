@@ -1,8 +1,10 @@
-from pygame.draw import rect, line, arc
-from random import randint
 import math as m
-import pygame.freetype
+from random import randint
+
 import numpy as np
+import pygame.freetype
+from pygame.draw import rect, line, arc
+
 from traveller_input import *
 from vis import *
 
@@ -21,6 +23,14 @@ BLACK = (0, 0, 0)
 COLORS = [RED, BLUE, YELLOW, GREEN, MAGENTA, CYAN]
 arrows = []
 units = []
+
+'''
+фоновая музыка
+'''
+pygame.mixer.init()
+pygame.mixer.music.load('The Legend Of Zelda Theme Song.wav')
+pygame.mixer.music.set_volume(0.05)
+pygame.mixer.music.play(-1, 0)
 
 class Sword:
     '''Класс меча:
@@ -130,7 +140,7 @@ class Wall:
 
     def stay(self):
         '''будет удалено'''
-        rect(screen, 'grey', (self.x, self.y, self.w, self.h))
+        rect(screen, (80, 80, 80), (self.x, self.y, self.w, self.h))
 
     def collision(self, arrows, units):
         '''проверка столкновения со стенами стрел'''
@@ -216,9 +226,9 @@ class Unit():
         '''
         отрисовывает полоски здоровья, выполняет функции связанные с поддержкой меча и лука
         '''
-        rect(screen, 'green',
+        rect(screen, (0, 255, 0),
              (self.x + 0.25 * self.width, self.y + self.height + 5, self.width * 0.5 * self.hp / 100 + 1, 10))
-        rect(screen, 'red', (self.x + 0.25 * self.width + self.width * 0.5 * self.hp / 100, self.y + self.height + 5,
+        rect(screen, (250, 0, 0), (self.x + 0.25 * self.width + self.width * 0.5 * self.hp / 100, self.y + self.height + 5,
                              self.width * 0.5 * (100 - self.hp) / 100, 10))
         if self.weapon == 'sword':
             self.hold_a_sword()

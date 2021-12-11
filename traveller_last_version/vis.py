@@ -90,7 +90,7 @@ right_mpic = [mr_1, mr_2, mr_3]
 
 for j in (back_pic, right_pic, left_pic, front_pic):
     for i in j:
-        i.set_colorkey((0, 0, 0))
+        i.set_colorkey((255, 255, 255))
 
 for j in (back_mpic, front_mpic, left_mpic, right_mpic):
     for i in j:

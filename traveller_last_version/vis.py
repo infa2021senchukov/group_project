@@ -98,5 +98,71 @@ for j in (back_mpic, front_mpic, left_mpic, right_mpic):
 
 evil_images=[]
 
+def vis_evil(units, tick):
+    '''
+    В цикле определяется нужное изображения для каждого врага
+    После цикла отрисовывается изображение
+    В качестве аргументов принимает список юнитов и счетчик
+    '''
+    global evil_images
+    number = 0
+    counter = ((tick % 11) // 3) % 3
+    for i in units:
+        if units.index(i) != 0:
+            if i.Vy < 0:
+                evil_images[number] = back_mpic[counter]
+            elif i.Vy > 0:
+                evil_images[number] = front_mpic[counter]
+            elif i.Vx < 0:
+                evil_images[number] = left_mpic[counter]
+            elif i.Vx > 0:
+                evil_images[number] = right_mpic[counter]
+            else:
+                evil_images[number] = mf_1
+            screen.blit(evil_images[number], [i.x, i.y])
+            number = number + 1
+
+def vis_evil_create(units):
+    '''
+    Создается список с изображениями по количеству врагов
+    В качестве аргументов принимает список юнитов
+    '''
+    global evil_images
+    func_evil_images = []
+    for i in units:
+        if units.index(i) != 0:
+            func_evil_images.append(evil_image)
+    evil_images = func_evil_images
+
+def vis_unit(units):
+    '''
+    В цикле определяется необходимое изображение для героя
+    После цикла изображение накладывается на прямоугольник героя
+    В качестве аргументов принимает список юнитов
+    '''
+    global hero_image, back_counter, front_counter, left_counter, right_counter
+    if units[0].Vy != 0 or units[0].Vx != 0:
+        if units[0].orientation == 'top':
+            hero_image = back_pic[back_counter]
+            back_counter = (back_counter + 1) % len(back_pic)
+        elif units[0].orientation == 'bot':
+            hero_image = front_pic[front_counter]
+            front_counter = (front_counter + 1) % len(front_pic)
+        elif units[0].orientation == 'left':
+            hero_image = left_pic[left_counter]
+            left_counter = (left_counter + 1) % len(left_pic)
+        elif units[0].orientation == 'right':
+            hero_image = right_pic[right_counter]
+            right_counter = (right_counter + 1) % len(right_pic)
+    else:
+        if units[0].orientation == 'top':
+            hero_image = back_pic[1]
+        elif units[0].orientation == 'bot':
+            hero_image = front_pic[front_counter]
+        elif units[0].orientation == 'left':
+            hero_image = left_pic[left_counter]
+        elif units[0].orientation == 'right':
+            hero_image = right_pic[right_counter]
+    screen.blit(hero_image, [units[0].x, units[0].y])
 
 

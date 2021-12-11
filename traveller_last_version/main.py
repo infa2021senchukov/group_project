@@ -334,69 +334,8 @@ def build_the_level(input_filename):
                  'right', units_data[i][5], 0, None, None, i, units_data[i][6]))
     return ((walls, units, sword, bow, units_data))
 
-def vis_unit():
-    '''
-    В цикле определяется необходимое изображение для героя
-    После цикла изображение накладывается на прямоугольник героя
-    '''
-    global hero_image, back_counter, front_counter, left_counter, right_counter
-    if units[0].Vy != 0 or units[0].Vx != 0:
-        if units[0].orientation == 'top':
-            hero_image = back_pic[back_counter]
-            back_counter = (back_counter + 1) % len(back_pic)
-        elif units[0].orientation == 'bot':
-            hero_image = front_pic[front_counter]
-            front_counter = (front_counter + 1) % len(front_pic)
-        elif units[0].orientation == 'left':
-            hero_image = left_pic[left_counter]
-            left_counter = (left_counter + 1) % len(left_pic)
-        elif units[0].orientation == 'right':
-            hero_image = right_pic[right_counter]
-            right_counter = (right_counter + 1) % len(right_pic)
-    else:
-        if units[0].orientation == 'top':
-            hero_image = back_pic[1]
-        elif units[0].orientation == 'bot':
-            hero_image = front_pic[front_counter]
-        elif units[0].orientation == 'left':
-            hero_image = left_pic[left_counter]
-        elif units[0].orientation == 'right':
-            hero_image = right_pic[right_counter]
-    screen.blit(hero_image, [units[0].x, units[0].y])
 
-def vis_evil_create():
-    '''
-    Создается список с изображениями по количеству врагов
-    '''
-    global evil_images
-    func_evil_images = []
-    for i in units:
-        if units.index(i) != 0:
-            func_evil_images.append(evil_image)
-    evil_images = func_evil_images
 
-def vis_evil():
-    '''
-    В цикле определяется нужное изображения для каждого врага
-    После цикла отрисовывается изображение
-    '''
-    global evil_images
-    number = 0
-    counter = ((tick % 11) // 3) % 3
-    for i in units:
-        if units.index(i) != 0:
-            if i.Vy < 0:
-                evil_images[number] = back_mpic[counter]
-            elif i.Vy > 0:
-                evil_images[number] = front_mpic[counter]
-            elif i.Vx < 0:
-                evil_images[number] = left_mpic[counter]
-            elif i.Vx > 0:
-                evil_images[number] = right_mpic[counter]
-            else:
-                evil_images[number] = mf_1
-            screen.blit(evil_images[number], [i.x, i.y])
-            number = number + 1
 
 def refresh(input_filename, walls, units, sword, bow, arrows, units_data):
     if len(units) == 1 and units[0].x > screen_width - units[0].width - 1:
@@ -465,8 +404,8 @@ while not finished:
                                                              sword, bow, arrows, units_data)
     pygame.display.update()
     screen.fill((255, 255, 255))
-    vis_unit()
-    vis_evil_create()
-    vis_evil()
+    vis_unit(units)
+    vis_evil_create(units)
+    vis_evil(units, tick)
     tick = tick + 1
 pygame.quit()

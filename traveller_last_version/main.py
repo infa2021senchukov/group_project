@@ -103,6 +103,10 @@ class Arrow:
 
 
 class Wall:
+    '''
+    дизайн стен
+    '''
+    walls_im = pygame.image.load("walls.jpg").convert()
     def __init__(self, x, y, w, h):
         self.x = x
         self.y = y
@@ -380,6 +384,11 @@ def sustain_all(units, walls, arrows, sword, flag, timer):
     (flag, timer) = sustain_units(units, walls, arrows, sword, flag, timer)
     sustain_arrows(arrows)
     return ((flag, timer))
+
+'''
+дизайн фона
+'''
+bg_im = pygame.image.load("backgroundtraveller.png").convert()
 
 
 pygame.display.update()

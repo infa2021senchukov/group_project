@@ -1,25 +1,16 @@
-import pygame
-import math as m
-from pygame.draw import circle
-from pygame.draw import polygon
-from pygame.draw import rect
-from pygame.draw import line
-from pygame.draw import arc
+from pygame.draw import rect, line, arc
 from random import randint
 import math as m
 import pygame.freetype
 import numpy as np
 from traveller_input import *
+from vis import *
 
 pygame.init()
-FPS = 60
-screen_height = 1000
-screen_width = 1200
-screen = pygame.display.set_mode((screen_width, screen_height))
+FPS = 30
 tick = 0
 flag = False
 timer = 0
-
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 YELLOW = (255, 255, 0)
@@ -130,8 +121,9 @@ class Wall:
                     arrows[j].speed = 0
 
 
-class Unit:
+class Unit():
     def __init__(self, x, y, width, height, Vx, Vy, dV, orientation, hp, weapon, sword, bow, buttons, points):
+
         self.x = x
         self.y = y
         self.width = width
@@ -177,7 +169,7 @@ class Unit:
         '''
         отрисовываем танк
         '''
-        rect(screen, 'grey', (self.x, self.y, self.width, self.height))
+        #rect(screen, 'grey', (self.x, self.y, self.width, self.height), 0)
         rect(screen, 'green',
              (self.x + 0.25 * self.width, self.y + self.height + 5, self.width * 0.5 * self.hp / 100 + 1, 10))
         rect(screen, 'red', (self.x + 0.25 * self.width + self.width * 0.5 * self.hp / 100, self.y + self.height + 5,
@@ -328,7 +320,7 @@ def build_the_level(input_filename):
     walls = []
     units = []
     units.append(
-        Unit(10, screen_height / 2, 50, 20, 0, 0, 5, 'right', 100, 'sword', None, None, ('w', 's', 'a', 'd'), None))
+        Unit(10, screen_height / 2, 30, 50, 0, 0, 5, 'right', 100, 'sword', None, None, ('w', 's', 'a', 'd'), None))
     sword = Sword(0, 0, 0, 0, 50, 5 * m.pi / 12, 0, units[0])
     bow = Bow(50, 25, 0, 0, units[0])
     units[0].sword = sword
@@ -342,6 +334,59 @@ def build_the_level(input_filename):
                  'right', units_data[i][5], 0, None, None, i, units_data[i][6]))
     return ((walls, units, sword, bow, units_data))
 
+def vis_unit():
+    global hero_image, back_counter, front_counter, left_counter, right_counter
+    if units[0].Vy != 0 or units[0].Vx != 0:
+        if units[0].orientation == 'top':
+            hero_image = back_pic[back_counter]
+            back_counter = (back_counter + 1) % len(back_pic)
+        elif units[0].orientation == 'bot':
+            hero_image = front_pic[front_counter]
+            front_counter = (front_counter + 1) % len(front_pic)
+        elif units[0].orientation == 'left':
+            hero_image = left_pic[left_counter]
+            left_counter = (left_counter + 1) % len(left_pic)
+        elif units[0].orientation == 'right':
+            hero_image = right_pic[right_counter]
+            right_counter = (right_counter + 1) % len(right_pic)
+    else:
+        if units[0].orientation == 'top':
+            hero_image = back_pic[1]
+        elif units[0].orientation == 'bot':
+            hero_image = front_pic[front_counter]
+        elif units[0].orientation == 'left':
+            hero_image = left_pic[left_counter]
+        elif units[0].orientation == 'right':
+            hero_image = right_pic[right_counter]
+    screen.blit(hero_image, [units[0].x, units[0].y])
+
+def vis_evil_create():
+    global evil_images
+    func_evil_images = []
+    for i in units:
+        if units.index(i) != 0:
+            func_evil_images.append(evil_image)
+    evil_images = func_evil_images
+
+def vis_evil():
+    global evil_images
+    number = 0
+    num_use = (0, 0, 0, 1, 1, 1, 2, 2, 2)
+    counter = ((tick % 11) // 3) % 3
+    for i in units:
+        if units.index(i) != 0:
+            if i.Vy < 0:
+                evil_images[number] = back_mpic[counter]
+            elif i.Vy > 0:
+                evil_images[number] = front_mpic[counter]
+            elif i.Vx < 0:
+                evil_images[number] = left_mpic[counter]
+            elif i.Vx > 0:
+                evil_images[number] = right_mpic[counter]
+            else:
+                evil_images[number] = mf_1
+            screen.blit(evil_images[number], [i.x, i.y])
+            number = number + 1
 
 def refresh(input_filename, walls, units, sword, bow, arrows, units_data):
     if len(units) == 1 and units[0].x > screen_width - units[0].width - 1:
@@ -352,7 +397,6 @@ def refresh(input_filename, walls, units, sword, bow, arrows, units_data):
         units[0].Vx = Vx
         units[0].Vy = Vy
     return ((walls, units, sword, bow, arrows, units_data))
-
 
 def sustain_walls(walls):
     for i in range(len(walls)):
@@ -411,5 +455,8 @@ while not finished:
                                                              sword, bow, arrows, units_data)
     pygame.display.update()
     screen.fill((255, 255, 255))
+    vis_unit()
+    vis_evil_create()
+    vis_evil()
     tick = tick + 1
 pygame.quit()

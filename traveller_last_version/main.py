@@ -335,6 +335,10 @@ def build_the_level(input_filename):
     return ((walls, units, sword, bow, units_data))
 
 def vis_unit():
+    '''
+    В цикле определяется необходимое изображение для героя
+    После цикла изображение накладывается на прямоугольник героя
+    '''
     global hero_image, back_counter, front_counter, left_counter, right_counter
     if units[0].Vy != 0 or units[0].Vx != 0:
         if units[0].orientation == 'top':
@@ -361,6 +365,9 @@ def vis_unit():
     screen.blit(hero_image, [units[0].x, units[0].y])
 
 def vis_evil_create():
+    '''
+    Создается список с изображениями по количеству врагов
+    '''
     global evil_images
     func_evil_images = []
     for i in units:
@@ -369,9 +376,12 @@ def vis_evil_create():
     evil_images = func_evil_images
 
 def vis_evil():
+    '''
+    В цикле определяется нужное изображения для каждого врага
+    После цикла отрисовывается изображение
+    '''
     global evil_images
     number = 0
-    num_use = (0, 0, 0, 1, 1, 1, 2, 2, 2)
     counter = ((tick % 11) // 3) % 3
     for i in units:
         if units.index(i) != 0:

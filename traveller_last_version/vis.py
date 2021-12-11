@@ -4,6 +4,7 @@ screen_height = 1000
 screen_width = 1200
 screen = pygame.display.set_mode((screen_width, screen_height))
 
+#Изображения для анимации героев загружатся в программу в виде переменных
 
 b_1 = pygame.image.load("hero/b_1.png").convert()
 b_2 = pygame.image.load("hero/b_2.png").convert()
@@ -61,18 +62,19 @@ mr_1 = pygame.image.load("evil/mr_1.png").convert()
 mr_2 = pygame.image.load("evil/mr_2.png").convert()
 mr_3 = pygame.image.load("evil/mr_3.png").convert()
 
+#Счетчики для пермещений героя
+
 back_counter = 0
 front_counter = 0
 left_counter = 0
 right_counter = 0
 
-back_mcounter = 0
-front_mcounter = 0
-left_mcounter = 0
-right_mcounter = 0
+#Стартовые изображения героев
 
-hero_image = f_5
+hero_image = r_5
 evil_image = mf_1
+
+#Списки пизображений для одного полежнения _pic - герой, _mpic - враги
 
 back_pic = [b_1, b_2, b_3, b_4, b_5, b_6, b_7, b_8, b_9]
 front_pic = [f_1, f_2, f_3, f_4, f_5, f_6, f_7, f_8, f_9]
@@ -84,6 +86,7 @@ left_mpic = [ml_1, ml_2, ml_3]
 right_mpic = [mr_1, mr_2, mr_3]
 
 
+# Цикл удаляет фон в картинках
 
 for j in (back_pic, right_pic, left_pic, front_pic):
     for i in j:
@@ -95,11 +98,5 @@ for j in (back_mpic, front_mpic, left_mpic, right_mpic):
 
 evil_images=[]
 
-def evil_pics_change():
-    global back_mcounter, front_mcounter, left_mcounter, right_mcounter
-    back_mcounter = (back_mcounter + 1) % 3
-    print(back_mcounter)
-    front_mcounter = (front_mcounter + 1) % 3
-    left_mcounter = (left_mcounter + 1) % 3
-    right_mcounter = (right_mcounter +1) % 3
+
 

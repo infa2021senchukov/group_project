@@ -28,7 +28,7 @@ units = []
 фоновая музыка
 '''
 pygame.mixer.init()
-pygame.mixer.music.load('The Legend Of Zelda Theme Song.wav')
+pygame.mixer.music.load('music/The Legend Of Zelda Theme Song.wav')
 pygame.mixer.music.set_volume(0.05)
 pygame.mixer.music.play(-1, 0)
 

@@ -25,12 +25,13 @@ arrows = []
 units = []
 
 '''
-фоновая музыкаd
+фоновая музыка
 '''
 pygame.mixer.init()
 pygame.mixer.music.load('music/The Legend Of Zelda Theme Song.wav')
 pygame.mixer.music.set_volume(0.05)
 pygame.mixer.music.play(-1, 0)
+
 
 class Sword:
     """Класс меча:
@@ -40,6 +41,7 @@ class Sword:
     phi - угол поворота
     sharp - статус (происходит удар или нет)
     owner - герой (тот, кому принадлежит меч)"""
+
     def __init__(self, x0, y0, x1, y1, l, phi, sharp, owner):
         self.x0 = x0
         self.y0 = y0
@@ -55,12 +57,23 @@ class Sword:
         self.phi = 5 * m.pi / 12
         self.sharp = 1
 
+
 class Bow:
     """Класс меча:
     w - ширина лука
     h - высота лука
     tension - параметр заряженности лука
     owner - герой (тот, кому принадлежит лук)"""
+
+    '''
+    звук выстрела
+    '''
+
+    def boom():
+        pygame.mixer.init()
+        pygame.mixer.music.load(('music/pew.wav'))
+        pygame.mixer.music.play()
+
     def __init__(self, w, h, phi, tension, owner):
         self.h = h
         self.w = w
@@ -69,13 +82,14 @@ class Bow:
         self.owner = owner
 
     def pull(self):
-        """начять заряжать выстрел"""
+        """начать заряжать выстрел"""
         if self.owner.weapon == 'bow':
             self.tension = 0.1
 
     def draw(self):
         """выпустить стрелу"""
         if self.owner.weapon == 'bow':
+
             if self.owner.orientation == 'right':
                 arrows.append(
                     Arrow(self.owner.x + self.owner.width + self.w / 2 + 20, self.owner.y + self.owner.height / 2,
@@ -101,6 +115,7 @@ class Arrow:
     x,y - координаты стрелы
     orientation - направление полета
     speed - скорость полета'''
+
     def __init__(self, x, y, orientation, speed):
         self.x = x
         self.y = y
@@ -111,7 +126,7 @@ class Arrow:
         '''осуществляет движение стрелы'''
         if self.orientation == 'right':
             line(screen, (0, 0, 0), (self.x, self.y), (self.x - 20, self.y), 3)
-            polygon(screen, (0, 0, 0), ([self.x+5, self.y], [self.x, self.y+5], [self.x, self.y-5]))
+            polygon(screen, (0, 0, 0), ([self.x + 5, self.y], [self.x, self.y + 5], [self.x, self.y - 5]))
             self.x = self.x + self.speed
         elif self.orientation == 'left':
             line(screen, (0, 0, 0), (self.x, self.y), (self.x + 20, self.y), 3)
@@ -119,11 +134,11 @@ class Arrow:
             self.x = self.x + self.speed
         elif self.orientation == 'top':
             line(screen, (0, 0, 0), (self.x, self.y), (self.x, self.y + 20), 3)
-            polygon(screen, (0, 0, 0), ([self.x, self.y-5], [self.x-5, self.y], [self.x+5, self.y]))
+            polygon(screen, (0, 0, 0), ([self.x, self.y - 5], [self.x - 5, self.y], [self.x + 5, self.y]))
             self.y = self.y + self.speed
         elif self.orientation == 'bot':
             line(screen, (0, 0, 0), (self.x, self.y), (self.x, self.y - 20), 3)
-            polygon(screen, (0, 0, 0), ([self.x, self.y+5], [self.x-5, self.y], [self.x+5, self.y]))
+            polygon(screen, (0, 0, 0), ([self.x, self.y + 5], [self.x - 5, self.y], [self.x + 5, self.y]))
             self.y = self.y + self.speed
 
 
@@ -136,6 +151,7 @@ class Wall:
     дизайн стен
     '''
     walls_im = pygame.image.load("walls.jpg").convert()
+
     def __init__(self, x, y, w, h):
         self.x = x
         self.y = y
@@ -175,12 +191,13 @@ class Unit():
     orientation - направление взгляда юнита
     hp - здоровье юнита
     weapon - для главного героя оружие, которое он дердит в руках, для врагов статус преследования: 0 - не преследуют,
-    1 - преседуют, так как герой подошел слишком близко, 2 - преследуют, так как в них попала стрела
+    1 - преследуют, так как герой подошел слишком близко, 2 - преследуют, так как в них попала стрела
     sword - объект класса Sword, меч героя
     bow - объект класса Bow, лук героя
     buttons - кнопки управления героем
     points - точки маршрута, которые патрулирует враг    
     '''
+
     def __init__(self, x, y, width, height, Vx, Vy, dV, orientation, hp, weapon, sword, bow, buttons, points):
 
         self.x = x
@@ -232,8 +249,9 @@ class Unit():
         '''
         rect(screen, (0, 255, 0),
              (self.x + 0.25 * self.width, self.y + self.height + 5, self.width * 0.5 * self.hp / 100 + 1, 10))
-        rect(screen, (250, 0, 0), (self.x + 0.25 * self.width + self.width * 0.5 * self.hp / 100, self.y + self.height + 5,
-                             self.width * 0.5 * (100 - self.hp) / 100, 10))
+        rect(screen, (250, 0, 0),
+             (self.x + 0.25 * self.width + self.width * 0.5 * self.hp / 100, self.y + self.height + 5,
+              self.width * 0.5 * (100 - self.hp) / 100, 10))
         if self.weapon == 'sword':
             self.hold_a_sword()
         if self.weapon == 'bow':
@@ -341,7 +359,8 @@ class Unit():
             self.bow.tension += 2.5
         if self.orientation == 'right':
             arc(screen, (0, 0, 0), (
-            self.x + self.width - self.bow.w / 2, self.y + self.height / 2 - self.bow.h / 2, self.bow.w, self.bow.h),
+                self.x + self.width - self.bow.w / 2, self.y + self.height / 2 - self.bow.h / 2, self.bow.w,
+                self.bow.h),
                 -m.pi / 2, m.pi / 2, 3)
         if self.orientation == 'left':
             arc(screen, (0, 0, 0),
@@ -352,13 +371,14 @@ class Unit():
                 (self.x + self.width / 2 - self.bow.h / 2, self.y - self.bow.w / 2, self.bow.h, self.bow.w), 0, m.pi, 3)
         if self.orientation == 'bot':
             arc(screen, (0, 0, 0), (
-            self.x + self.width / 2 - self.bow.h / 2, self.y + self.height - self.bow.w / 2, self.bow.h, self.bow.w),
+                self.x + self.width / 2 - self.bow.h / 2, self.y + self.height - self.bow.w / 2, self.bow.h,
+                self.bow.w),
                 m.pi, 0, 3)
         rect(screen, 'yellow',
              (self.x + 0.25 * self.width, self.y + self.height + 20, self.width * 0.5 * self.bow.tension / 100 + 1, 10))
         rect(screen, 'grey', (
-        self.x + 0.25 * self.width + self.width * 0.5 * self.bow.tension / 100, self.y + self.height + 20,
-        self.width * 0.5 * (100 - self.bow.tension) / 100 + 1, 10))
+            self.x + 0.25 * self.width + self.width * 0.5 * self.bow.tension / 100, self.y + self.height + 20,
+            self.width * 0.5 * (100 - self.bow.tension) / 100 + 1, 10))
 
     def change_weapon(self):
         '''
@@ -412,6 +432,7 @@ def build_the_level(input_filename):
                  'right', units_data[i][5], 0, None, None, i, units_data[i][6]))
     return ((walls, units, sword, bow, units_data))
 
+
 def refresh(input_filename, walls, units, sword, bow, arrows, units_data):
     '''
     осуществляет переход на новый уровень
@@ -424,6 +445,7 @@ def refresh(input_filename, walls, units, sword, bow, arrows, units_data):
         units[0].Vx = Vx
         units[0].Vy = Vy
     return ((walls, units, sword, bow, arrows, units_data))
+
 
 def sustain_walls(walls):
     '''
@@ -464,11 +486,11 @@ def sustain_all(units, walls, arrows, sword, flag, timer):
     sustain_arrows(arrows)
     return ((flag, timer))
 
+
 '''
 дизайн фона
 '''
 bg_im = pygame.image.load("backgroundtraveller.png").convert()
-
 
 pygame.display.update()
 clock = pygame.time.Clock()
@@ -498,7 +520,7 @@ while not finished:
     (walls, units, sword, bow, arrows, units_data) = refresh("level_" + str(randint(1, 2)) + ".txt", walls, units,
                                                              sword, bow, arrows, units_data)
     pygame.display.update()
-    #screen.fill((255, 255, 255))
+    # screen.fill((255, 255, 255))
     screen.blit(bg_im, [0, 0])
     vis_unit(units)
     vis_evil_create(units)

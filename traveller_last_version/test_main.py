@@ -23,6 +23,7 @@ BLACK = (0, 0, 0)
 COLORS = [RED, BLUE, YELLOW, GREEN, MAGENTA, CYAN]
 arrows = []
 units = []
+pills = []
 
 '''
 фоновая музыка
@@ -141,6 +142,27 @@ class Arrow:
             polygon(screen, (0, 0, 0), ([self.x, self.y + 5], [self.x - 5, self.y], [self.x + 5, self.y]))
             self.y = self.y + self.speed
 
+class Pill:
+    '''
+    Класс ядов и лекарств, при соприкосновении с которыми герой получает или етряет урон
+    '''
+
+    def __init__(self, x, y, type):
+        '''
+        Принимает значения координат и типа
+        -1 для наносящих урон ядов
+        1 для лекарств
+        '''
+        self.x = x
+        self.y = y
+        self.w = 5
+        self.h = 5
+        self.hp = 10
+        self.type = type
+
+    def stay(self):
+        rect(screen, (0, 0, 0), (self.x, self.y, self.w, self.h))
+
 
 class Wall:
     '''Класс стен:
@@ -150,8 +172,6 @@ class Wall:
     '''
     дизайн стен
     '''
-    walls_im = pygame.image.load("walls.jpg").convert()
-
     def __init__(self, x, y, w, h):
         self.x = x
         self.y = y
@@ -195,7 +215,7 @@ class Unit():
     sword - объект класса Sword, меч героя
     bow - объект класса Bow, лук героя
     buttons - кнопки управления героем
-    points - точки маршрута, которые патрулирует враг    
+    points - точки маршрута, которые патрулирует враг
     '''
 
     def __init__(self, x, y, width, height, Vx, Vy, dV, orientation, hp, weapon, sword, bow, buttons, points):
@@ -410,6 +430,18 @@ class Unit():
         if self.hp <= 0:
             units.remove(units[i])
 
+    def heal(self, pills):
+        '''
+        Функция лечения персонажа
+        Если тип лекарства 1, то он лечится
+        Если -1, то наносится урон
+        '''
+        for j in range(len(pills) - 1, -1, -1):
+            if pills[j].x > self.x and pills[j].x < self.x + self.width and pills[j].y > self.y and pills[
+                j].y < self.y + self.height:
+                self.hp += 10 * pills[j].type
+                pills.remove(pills[j])
+
 
 def build_the_level(input_filename):
     '''
@@ -491,7 +523,6 @@ def sustain_all(units, walls, arrows, sword, flag, timer):
 дизайн фона
 '''
 bg_im = pygame.image.load("backgroundtraveller.png").convert()
-
 pygame.display.update()
 clock = pygame.time.Clock()
 finished = False
@@ -526,4 +557,5 @@ while not finished:
     vis_evil_create(units)
     vis_evil(units, tick)
     tick = tick + 1
+    pills[0].stay()
 pygame.quit()

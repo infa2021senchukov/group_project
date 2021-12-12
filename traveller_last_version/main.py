@@ -3,7 +3,7 @@ from random import randint
 
 import numpy as np
 import pygame.freetype
-from pygame.draw import rect, line, arc
+from pygame.draw import rect, line, arc, polygon
 
 from traveller_input import *
 from vis import *
@@ -25,7 +25,7 @@ arrows = []
 units = []
 
 '''
-фоновая музыка
+фоновая музыкаd
 '''
 pygame.mixer.init()
 pygame.mixer.music.load('music/The Legend Of Zelda Theme Song.wav')
@@ -33,13 +33,13 @@ pygame.mixer.music.set_volume(0.05)
 pygame.mixer.music.play(-1, 0)
 
 class Sword:
-    '''Класс меча:
+    """Класс меча:
     x0,y0 - координата начала
     x1, y1 - координаиа конца
     l - длина
     phi - угол поворота
     sharp - статус (происходит удар или нет)
-    owner - герой (тот, кому принадлежит меч)'''
+    owner - герой (тот, кому принадлежит меч)"""
     def __init__(self, x0, y0, x1, y1, l, phi, sharp, owner):
         self.x0 = x0
         self.y0 = y0
@@ -56,11 +56,11 @@ class Sword:
         self.sharp = 1
 
 class Bow:
-    '''Класс меча:
+    """Класс меча:
     w - ширина лука
     h - высота лука
     tension - параметр заряженности лука
-    owner - герой (тот, кому принадлежит лук)'''
+    owner - герой (тот, кому принадлежит лук)"""
     def __init__(self, w, h, phi, tension, owner):
         self.h = h
         self.w = w
@@ -69,12 +69,12 @@ class Bow:
         self.owner = owner
 
     def pull(self):
-        '''начять заряжать выстрел'''
+        """начять заряжать выстрел"""
         if self.owner.weapon == 'bow':
             self.tension = 0.1
 
     def draw(self):
-        '''выпустить стрелу'''
+        """выпустить стрелу"""
         if self.owner.weapon == 'bow':
             if self.owner.orientation == 'right':
                 arrows.append(
@@ -111,15 +111,19 @@ class Arrow:
         '''осуществляет движение стрелы'''
         if self.orientation == 'right':
             line(screen, (0, 0, 0), (self.x, self.y), (self.x - 20, self.y), 3)
+            polygon(screen, (0, 0, 0), ([self.x+5, self.y], [self.x, self.y+5], [self.x, self.y-5]))
             self.x = self.x + self.speed
         elif self.orientation == 'left':
             line(screen, (0, 0, 0), (self.x, self.y), (self.x + 20, self.y), 3)
+            polygon(screen, (0, 0, 0), ([self.x - 5, self.y], [self.x, self.y + 5], [self.x, self.y - 5]))
             self.x = self.x + self.speed
         elif self.orientation == 'top':
             line(screen, (0, 0, 0), (self.x, self.y), (self.x, self.y + 20), 3)
+            polygon(screen, (0, 0, 0), ([self.x, self.y-5], [self.x-5, self.y], [self.x+5, self.y]))
             self.y = self.y + self.speed
         elif self.orientation == 'bot':
             line(screen, (0, 0, 0), (self.x, self.y), (self.x, self.y - 20), 3)
+            polygon(screen, (0, 0, 0), ([self.x, self.y+5], [self.x-5, self.y], [self.x+5, self.y]))
             self.y = self.y + self.speed
 
 
@@ -407,9 +411,6 @@ def build_the_level(input_filename):
             Unit(units_data[i][0], units_data[i][1], units_data[i][2], units_data[i][3], 0, 0, units_data[i][4],
                  'right', units_data[i][5], 0, None, None, i, units_data[i][6]))
     return ((walls, units, sword, bow, units_data))
-
-
-
 
 def refresh(input_filename, walls, units, sword, bow, arrows, units_data):
     '''

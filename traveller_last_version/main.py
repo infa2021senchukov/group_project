@@ -490,7 +490,7 @@ def sustain_all(units, walls, arrows, sword, flag, timer):
 '''
 дизайн фона
 '''
-bg_im = pygame.image.load("NovyKholst2.png").convert()
+bg_im = pygame.image.load("NovyKholst.png").convert()
 
 pygame.display.update()
 clock = pygame.time.Clock()

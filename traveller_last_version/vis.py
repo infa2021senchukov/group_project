@@ -4,6 +4,12 @@ screen_height = 1000
 screen_width = 1200
 screen = pygame.display.set_mode((screen_width, screen_height))
 
+'''
+дизайн фона
+'''
+bg_im = pygame.image.load("backgroundtraveller.png").convert()
+
+
 #Изображения для анимации героев загружатся в программу в виде переменных
 
 b_1 = pygame.image.load("hero/b_1.png").convert()

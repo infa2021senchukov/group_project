@@ -13,11 +13,9 @@ class Button:
         self.w = w
 
     def press(self):
-        for event in pygame.event.get():
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                mouse = pygame.mouse.get_pos()
-                if mouse[0] < self.x + self.w and mouse[0] > self.x and mouse[1] < self.y + self.h and mouse[1] > self.y:
-                    return True
+        mouse = pygame.mouse.get_pos()
+        if mouse[0] < self.x + self.w and mouse[0] > self.x and mouse[1] < self.y + self.h and mouse[1] > self.y:
+            return True
         return False
 
 

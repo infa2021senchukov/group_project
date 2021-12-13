@@ -490,55 +490,56 @@ def sustain_all(units, walls, arrows, sword, flag, timer):
     return ((flag, timer))
 
 def start_menu():
-    global place, tick
-    if start_b.press() == True:
-        place = 'start'
-        print(1)
-        print(place)
+    global place, tick, finished, walls, units, sword, bow, units_data
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            finished = True
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if start_b.press() == True:
+                place = 'start'
     screen.blit(pic_menu, [0, 0])
     pygame.display.update()
 
 
 def start_game():
     global walls, units, sword, bow, arrows, units_data, flag, timer, finished, tick, place
-    #(walls, units, sword, bow, units_data) = build_the_level("level_" + str(randint(1, 2)) + ".txt")
-    (flag, timer) = sustain_all(units, walls, arrows, sword, flag, timer)
-    for event in pygame.event.get():
-        if units[0].hp <= 0:
-            place = 'menu'
-        if event.type == pygame.QUIT:
-            finished = True
-        elif event.type == pygame.KEYDOWN:
-            units[0].change_direction(event, walls)
-        elif event.type == pygame.KEYUP:
-            units[0].change_direction(event, walls)
-        elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            if units[0].weapon == 'sword':
-                sword.strike()
-            if units[0].weapon == 'bow':
-                bow.pull()
-        elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
-            units[0].change_weapon()
-        elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-            bow.draw()
-    (walls, units, sword, bow, arrows, units_data) = refresh("level_" + str(randint(3, 6)) + ".txt", walls, units,
-                                                             sword, bow, arrows, units_data)
-    pygame.display.update()
-    # screen.fill((255, 255, 255))
-    screen.blit(bg_im, [0, 0])
-    vis_unit(units)
-    vis_evil_create(units)
-    vis_evil(units, tick)
+    if units[0].hp <= 0:
+        place = 'menu'
+        (walls, units, sword, bow, units_data) = build_the_level("level_" + str(randint(1, 4)) + ".txt")
+    else:
+        (flag, timer) = sustain_all(units, walls, arrows, sword, flag, timer)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                finished = True
+            if event.type == pygame.KEYDOWN:
+                units[0].change_direction(event, walls)
+            elif event.type == pygame.KEYUP:
+                units[0].change_direction(event, walls)
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if units[0].weapon == 'sword':
+                    sword.strike()
+                if units[0].weapon == 'bow':
+                    bow.pull()
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
+                units[0].change_weapon()
+            elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                bow.draw()
+        (walls, units, sword, bow, arrows, units_data) = refresh("level_" + str(randint(1, 4)) + ".txt", walls, units,
+                                                                 sword, bow, arrows, units_data)
+        pygame.display.update()
+        # screen.fill((255, 255, 255))
+        screen.blit(bg_im, [0, 0])
+        vis_unit(units)
+        vis_evil_create(units)
+        vis_evil(units, tick)
 
-'''
-дизайн фона
-'''
-bg_im = pygame.image.load("backgroundtraveller.png").convert()
 
+
+
+(walls, units, sword, bow, units_data) = build_the_level("level_" + str(randint(1, 2)) + ".txt")
 pygame.display.update()
 clock = pygame.time.Clock()
 finished = False
-(walls, units, sword, bow, units_data) = build_the_level("level_" + str(randint(3, 6)) + ".txt")
 while not finished:
     clock.tick(FPS)
     if place == 'menu':

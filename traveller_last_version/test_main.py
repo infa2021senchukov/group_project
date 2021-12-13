@@ -8,6 +8,8 @@ from pygame.draw import rect, line, arc, polygon
 from traveller_input import *
 from vis import *
 
+from menu import *
+
 pygame.init()
 FPS = 30
 tick = 0
@@ -23,7 +25,6 @@ BLACK = (0, 0, 0)
 COLORS = [RED, BLUE, YELLOW, GREEN, MAGENTA, CYAN]
 arrows = []
 units = []
-pills = []
 
 '''
 фоновая музыка
@@ -70,10 +71,6 @@ class Bow:
     звук выстрела
     '''
 
-    def boom():
-        pygame.mixer.init()
-        pygame.mixer.music.load(('music/pew.wav'))
-        pygame.mixer.music.play()
 
     def __init__(self, w, h, phi, tension, owner):
         self.h = h
@@ -81,6 +78,11 @@ class Bow:
         self.phi = phi
         self.tension = tension
         self.owner = owner
+
+    def boom():
+        pygame.mixer.init()
+        pygame.mixer.music.load(('music/pew.wav'))
+        pygame.mixer.music.play()
 
     def pull(self):
         """начать заряжать выстрел"""
@@ -142,27 +144,6 @@ class Arrow:
             polygon(screen, (0, 0, 0), ([self.x, self.y + 5], [self.x - 5, self.y], [self.x + 5, self.y]))
             self.y = self.y + self.speed
 
-class Pill:
-    '''
-    Класс ядов и лекарств, при соприкосновении с которыми герой получает или етряет урон
-    '''
-
-    def __init__(self, x, y, type):
-        '''
-        Принимает значения координат и типа
-        -1 для наносящих урон ядов
-        1 для лекарств
-        '''
-        self.x = x
-        self.y = y
-        self.w = 5
-        self.h = 5
-        self.hp = 10
-        self.type = type
-
-    def stay(self):
-        rect(screen, (0, 0, 0), (self.x, self.y, self.w, self.h))
-
 
 class Wall:
     '''Класс стен:
@@ -172,6 +153,8 @@ class Wall:
     '''
     дизайн стен
     '''
+    walls_im = pygame.image.load("walls.jpg").convert()
+
     def __init__(self, x, y, w, h):
         self.x = x
         self.y = y
@@ -430,18 +413,6 @@ class Unit():
         if self.hp <= 0:
             units.remove(units[i])
 
-    def heal(self, pills):
-        '''
-        Функция лечения персонажа
-        Если тип лекарства 1, то он лечится
-        Если -1, то наносится урон
-        '''
-        for j in range(len(pills) - 1, -1, -1):
-            if pills[j].x > self.x and pills[j].x < self.x + self.width and pills[j].y > self.y and pills[
-                j].y < self.y + self.height:
-                self.hp += 10 * pills[j].type
-                pills.remove(pills[j])
-
 
 def build_the_level(input_filename):
     '''
@@ -518,20 +489,20 @@ def sustain_all(units, walls, arrows, sword, flag, timer):
     sustain_arrows(arrows)
     return ((flag, timer))
 
+def start_menu():
+    global place, tick
+    if start_b.press() == True:
+        place = 'start'
+        print(1)
+        print(place)
+    screen.blit(pic_menu, [0, 0])
+    pygame.display.update()
 
-'''
-дизайн фона
-'''
-bg_im = pygame.image.load("backgroundtraveller.png").convert()
-pygame.display.update()
-clock = pygame.time.Clock()
-finished = False
-(walls, units, sword, bow, units_data) = build_the_level("level_" + str(randint(1, 2)) + ".txt")
-while not finished:
-    clock.tick(FPS)
+
+def start_game():
+    global walls, units, sword, bow, arrows, units_data, flag, timer, finished, tick, place
+    #(walls, units, sword, bow, units_data) = build_the_level("level_" + str(randint(1, 2)) + ".txt")
     (flag, timer) = sustain_all(units, walls, arrows, sword, flag, timer)
-    if units[0].hp <= 0:
-        finished = True
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             finished = True
@@ -548,7 +519,7 @@ while not finished:
             units[0].change_weapon()
         elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
             bow.draw()
-    (walls, units, sword, bow, arrows, units_data) = refresh("level_" + str(randint(1, 2)) + ".txt", walls, units,
+    (walls, units, sword, bow, arrows, units_data) = refresh("level_" + str(randint(3, 6)) + ".txt", walls, units,
                                                              sword, bow, arrows, units_data)
     pygame.display.update()
     # screen.fill((255, 255, 255))
@@ -556,6 +527,22 @@ while not finished:
     vis_unit(units)
     vis_evil_create(units)
     vis_evil(units, tick)
+
+'''
+дизайн фона
+'''
+bg_im = pygame.image.load("backgroundtraveller.png").convert()
+
+pygame.display.update()
+clock = pygame.time.Clock()
+finished = False
+(walls, units, sword, bow, units_data) = build_the_level("level_" + str(randint(3, 6)) + ".txt")
+while not finished:
+    clock.tick(FPS)
+    if place == 'menu':
+        start_menu()
+    if place == 'start':
+        start_game()
     tick = tick + 1
-    pills[0].stay()
+   # pygame.display.update()
 pygame.quit()

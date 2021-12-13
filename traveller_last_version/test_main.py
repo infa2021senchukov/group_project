@@ -504,6 +504,8 @@ def start_game():
     #(walls, units, sword, bow, units_data) = build_the_level("level_" + str(randint(1, 2)) + ".txt")
     (flag, timer) = sustain_all(units, walls, arrows, sword, flag, timer)
     for event in pygame.event.get():
+        if units[0].hp <= 0:
+            place = 'menu'
         if event.type == pygame.QUIT:
             finished = True
         elif event.type == pygame.KEYDOWN:

@@ -495,7 +495,7 @@ bg_im = pygame.image.load("backgroundtraveller.png").convert()
 pygame.display.update()
 clock = pygame.time.Clock()
 finished = False
-(walls, units, sword, bow, units_data) = build_the_level("level_" + str(randint(1, 2)) + ".txt")
+(walls, units, sword, bow, units_data) = build_the_level("level_" + str(randint(1, 4)) + ".txt")
 while not finished:
     clock.tick(FPS)
     (flag, timer) = sustain_all(units, walls, arrows, sword, flag, timer)
@@ -517,7 +517,7 @@ while not finished:
             units[0].change_weapon()
         elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
             bow.draw()
-    (walls, units, sword, bow, arrows, units_data) = refresh("level_" + str(randint(1, 2)) + ".txt", walls, units,
+    (walls, units, sword, bow, arrows, units_data) = refresh("level_" + str(randint(1, 4)) + ".txt", walls, units,
                                                              sword, bow, arrows, units_data)
     pygame.display.update()
     # screen.fill((255, 255, 255))

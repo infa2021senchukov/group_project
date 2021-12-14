@@ -11,7 +11,11 @@ from vis import *
 from menu import *
 
 pygame.init()
+<<<<<<< HEAD
 FPS = 60
+=======
+FPS = 31
+>>>>>>> 0b349e5e198fb9fbf618f3c9dbbfc1820c05e7e9
 tick = 0
 flag = False
 timer = 0
@@ -490,16 +494,28 @@ def sustain_all(units, walls, arrows, sword, flag, timer):
     return ((flag, timer))
 
 def start_menu():
-    global place, tick, finished, walls, units, sword, bow, units_data
+    global place, finished
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             finished = True
         if event.type == pygame.MOUSEBUTTONDOWN:
             if start_b.press() == True:
-                place = 'start'
+                place = 'story'
+            if how_b.press() == True:
+                place = 'how'
     screen.blit(pic_menu, [0, 0])
     pygame.display.update()
 
+def start_how():
+    global place, finished
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            finished = True
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                place = 'menu'
+    screen.blit(pic_how, [0, 0])
+    pygame.display.update()
 
 def start_game():
     global walls, units, sword, bow, arrows, units_data, flag, timer, finished, tick, place
@@ -514,6 +530,8 @@ def start_game():
                 finished = True
             if event.type == pygame.KEYDOWN:
                 units[0].change_direction(event, walls)
+                if event.key == pygame.K_ESCAPE:
+                    units[0].hp = 0
             elif event.type == pygame.KEYUP:
                 units[0].change_direction(event, walls)
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -534,6 +552,20 @@ def start_game():
         vis_evil_create(units)
         vis_evil(units, tick)
 
+def start_story():
+    global place, finished
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            finished = True
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                place = 'start'
+            if event.key == pygame.K_ESCAPE:
+                place = 'menu'
+    screen.blit(pic_start, [0, 0])
+    pygame.display.update()
+
+
 
 
 
@@ -545,8 +577,12 @@ while not finished:
     clock.tick(FPS)
     if place == 'menu':
         start_menu()
-    if place == 'start':
+    elif place == 'start':
         start_game()
+    elif place == 'how':
+        start_how()
+    elif place == 'story':
+        start_story()
     tick = tick + 1
    # pygame.display.update()
 pygame.quit()

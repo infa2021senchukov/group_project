@@ -141,7 +141,40 @@ class Arrow:
             polygon(screen, (0, 0, 0), ([self.x, self.y + 5], [self.x - 5, self.y], [self.x + 5, self.y]))
             self.y = self.y + self.speed
 
-
+class Heal:
+     def __init__(self, x, y, w, h):
+        self.x = x
+        self.y = y
+        self.w = w
+        self.h = h
+     def stay(self):
+        '''будет удалено'''
+        rect(screen, 'green', (self.x, self.y, self.w, self.h))
+     def heal(self,units,heals,j):
+         for i in range(len(units)):
+             if units[i].x + units[i].width + units[i].Vx > self.x and units[i].x < self.x + self.w and units[i].y < self.y + self.h and units[i].y + units[i].height > self.y and units[i].hp <= 50:
+                units[i].hp += 40
+                heals.remove(heals[j])    
+class Cactus:
+     def __init__(self, x, y, w, h):
+        self.x = x
+        self.y = y
+        self.w = w
+        self.h = h
+     def stay(self):
+        '''будет удалено'''
+        rect(screen, 'red', (self.x, self.y, self.w, self.h))
+     def sting(self,units,flag, timer):
+         for i in range(len(units)):
+             if units[i].x + units[i].width + units[i].Vx > self.x and units[i].x < self.x + self.w and units[i].y < self.y + self.h and units[i].y + units[i].height > self.y and flag == False:
+                units[i].hp -= 20
+                flag = True
+                timer = tick
+             if tick - timer == 50:
+                timer = 0
+                flag = False
+         return((flag,timer))
+        
 class Wall:
     '''Класс стен:
     x,y - координаты стены
@@ -416,6 +449,8 @@ def build_the_level(input_filename):
     создает уровней по информации из input
     '''
     walls = []
+    heals=[]
+    cactuses=[]
     units = []
     units.append(
         Unit(10, screen_height / 2, 30, 50, 0, 0, 5, 'right', 100, 'sword', None, None, ('w', 's', 'a', 'd'), None))
@@ -423,17 +458,20 @@ def build_the_level(input_filename):
     bow = Bow(50, 25, 0, 0, units[0])
     units[0].sword = sword
     units[0].bow = bow
-    (walls_data, units_data) = read_data_from_file(input_filename)
+    (walls_data, units_data, heals_data, cactuses_data) = read_data_from_file(input_filename)
     for i in range(len(walls_data)):
         walls.append(Wall(walls_data[i][0], walls_data[i][1], walls_data[i][2], walls_data[i][3]))
+    for i in range(len(heals_data)):
+        heals.append(Heal(heals_data[i][0], heals_data[i][1], heals_data[i][2], heals_data[i][3]))
+    for i in range(len(cactuses_data)):
+        cactuses.append(Cactus(cactuses_data[i][0], cactuses_data[i][1], cactuses_data[i][2], cactuses_data[i][3]))
     for i in range(len(units_data)):
         units.append(
             Unit(units_data[i][0], units_data[i][1], units_data[i][2], units_data[i][3], 0, 0, units_data[i][4],
                  'right', units_data[i][5], 0, None, None, i, units_data[i][6]))
-    return ((walls, units, sword, bow, units_data))
+    return ((walls, heals, cactuses, units, sword, bow, units_data))
 
-
-def refresh(input_filename, walls, units, sword, bow, arrows, units_data):
+def refresh(input_filename, walls, heals, cactuses, units, sword, bow, arrows, units_data):
     '''
     осуществляет переход на новый уровень
     '''
@@ -441,19 +479,27 @@ def refresh(input_filename, walls, units, sword, bow, arrows, units_data):
         arrows = []
         Vx = units[0].Vx
         Vy = units[0].Vy
-        (walls, units, sword, bow, units_data) = build_the_level(input_filename)
+        (walls, heals, cactuses, units, sword, bow, units_data) = build_the_level(input_filename)
         units[0].Vx = Vx
         units[0].Vy = Vy
-    return ((walls, units, sword, bow, arrows, units_data))
+    return ((walls, heals, cactuses, units, sword, bow, arrows, units_data))
 
 
-def sustain_walls(walls):
+
+def sustain_walls(walls,flag,timer):
     '''
     поддерживает существование стен
     '''
     for i in range(len(walls)):
         walls[i].stay()
         walls[i].collision(arrows, units)
+    for j in range(len(heals)-1,-1,-1):
+        heals[j].stay()
+        heals[j].heal(units,heals,j)
+    for i in range(len(cactuses)):
+        cactuses[i].stay()
+        (flag,timer) = cactuses[i].sting(units, flag,timer)
+    return((flag,timer))
 
 
 def sustain_units(units, walls, arrows, sword, flag, timer):
@@ -481,7 +527,7 @@ def sustain_all(units, walls, arrows, sword, flag, timer):
     '''
     поддерживает существование всех объектов уровня
     '''
-    sustain_walls(walls)
+    (flag,timer) = sustain_walls(walls, flag, timer)
     (flag, timer) = sustain_units(units, walls, arrows, sword, flag, timer)
     sustain_arrows(arrows)
     return ((flag, timer))
@@ -495,12 +541,12 @@ bg_im = pygame.image.load("backgroundtraveller.png").convert()
 pygame.display.update()
 clock = pygame.time.Clock()
 finished = False
-(walls, units, sword, bow, units_data) = build_the_level("level_" + str(randint(1, 4)) + ".txt")
+(walls, heals, cactuses, units, sword, bow, units_data) = build_the_level("level_" + str(randint(3, 3)) + ".txt")
 while not finished:
     clock.tick(FPS)
-    (flag, timer) = sustain_all(units, walls, arrows, sword, flag, timer)
     if units[0].hp <= 0:
         finished = True
+    (flag, timer) = sustain_all(units, walls, arrows, sword, flag, timer)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             finished = True
@@ -517,10 +563,9 @@ while not finished:
             units[0].change_weapon()
         elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
             bow.draw()
-    (walls, units, sword, bow, arrows, units_data) = refresh("level_" + str(randint(1, 4)) + ".txt", walls, units,
+    (walls, heals, cactuses, units, sword, bow, arrows, units_data) = refresh("level_" + str(randint(1, 2)) + ".txt", walls, heals, cactuses, units,
                                                              sword, bow, arrows, units_data)
     pygame.display.update()
-    # screen.fill((255, 255, 255))
     screen.blit(bg_im, [0, 0])
     vis_unit(units)
     vis_evil_create(units)

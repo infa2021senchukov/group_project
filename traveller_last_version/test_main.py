@@ -11,7 +11,7 @@ from vis import *
 from menu import *
 
 pygame.init()
-FPS = 30
+FPS = 60
 tick = 0
 flag = False
 timer = 0

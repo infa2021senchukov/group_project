@@ -506,6 +506,7 @@ def start_game():
     if units[0].hp <= 0:
         place = 'menu'
         (walls, units, sword, bow, units_data) = build_the_level("level_" + str(randint(1, 4)) + ".txt")
+        arrows = []
     else:
         (flag, timer) = sustain_all(units, walls, arrows, sword, flag, timer)
         for event in pygame.event.get():

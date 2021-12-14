@@ -112,7 +112,7 @@ class Arrow:
             line(screen, (0, 0, 0), (self.x, self.y), (self.x, self.y - 20), 3)
             self.y = self.y + self.speed
 
-class Heal():
+class Heal:
      def __init__(self, x, y, w, h):
         self.x = x
         self.y = y
@@ -123,10 +123,10 @@ class Heal():
         rect(screen, 'green', (self.x, self.y, self.w, self.h))
      def heal(self,units,heals,j):
          for i in range(len(units)):
-             if units[i].x + units[i].width + units[i].Vx > self.x and units[i].x < self.x + self.w and units[i].y < self.y + self.h and units[i].y + units[i].height > self.y:
+             if units[i].x + units[i].width + units[i].Vx > self.x and units[i].x < self.x + self.w and units[i].y < self.y + self.h and units[i].y + units[i].height > self.y and units[i].hp <= 50:
                 units[i].hp += 40
                 heals.remove(heals[j])    
-class Cactus():
+class Cactus:
      def __init__(self, x, y, w, h):
         self.x = x
         self.y = y
@@ -138,13 +138,14 @@ class Cactus():
      def sting(self,units,flag, timer):
          for i in range(len(units)):
              if units[i].x + units[i].width + units[i].Vx > self.x and units[i].x < self.x + self.w and units[i].y < self.y + self.h and units[i].y + units[i].height > self.y and flag == False:
-                units[i].hp -= 40
+                units[i].hp -= 20
                 flag = True
                 timer = tick
              if tick - timer == 50:
                 timer = 0
                 flag = False
-         return((flag,timer)) 
+         return((flag,timer))
+
 class Wall:
     '''Класс стен:
     x,y - координаты стены

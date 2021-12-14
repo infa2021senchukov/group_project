@@ -25,6 +25,7 @@ BLACK = (0, 0, 0)
 COLORS = [RED, BLUE, YELLOW, GREEN, MAGENTA, CYAN]
 arrows = []
 units = []
+score = 1
 
 '''
 фоновая музыка
@@ -474,7 +475,7 @@ def build_the_level(input_filename):
                  'right', units_data[i][5], 0, None, None, i, units_data[i][6]))
     return ((walls, heals, cactuses, units, sword, bow, units_data))
 
-def refresh(input_filename, walls, heals, cactuses, units, sword, bow, arrows, units_data):
+def refresh(input_filename, walls, heals, cactuses, units, sword, bow, arrows, units_data, score):
     '''
     осуществляет переход на новый уровень
     '''
@@ -485,7 +486,8 @@ def refresh(input_filename, walls, heals, cactuses, units, sword, bow, arrows, u
         (walls, heals, cactuses, units, sword, bow, units_data) = build_the_level(input_filename)
         units[0].Vx = Vx
         units[0].Vy = Vy
-    return ((walls, heals, cactuses, units, sword, bow, arrows, units_data))
+        score += 1
+    return ((walls, heals, cactuses, units, sword, bow, arrows, units_data, score))
 
 
 def sustain_walls(walls,flag,timer):
@@ -559,12 +561,12 @@ def start_how():
     pygame.display.update()
 
 def start_game():
-    global walls, units, sword, bow, arrows, units_data, flag, timer, finished, tick, place
+    global walls, units, sword, bow, arrows, units_data, flag, timer, finished, tick, place, score
     heals =[]
     cactuses= []
     if units[0].hp <= 0:
         place = 'menu'
-        (walls, heals, cactuses, units, sword, bow, units_data) = build_the_level("level_" + str(randint(1, 4)) + ".txt")
+        (walls, heals, cactuses, units, sword, bow, units_data) = build_the_level("level_" + str(randint(1, 6)) + ".txt")
         arrows = []
     else:
         (flag, timer) = sustain_all(units, walls, arrows, sword, flag, timer)
@@ -586,8 +588,8 @@ def start_game():
                 units[0].change_weapon()
             elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                 bow.draw()
-        (walls, heals, cactuses, units, sword, bow, arrows, units_data) = refresh("level_" + str(randint(1, 1)) + ".txt", walls, heals, cactuses, units,
-                                                             sword, bow, arrows, units_data)
+        (walls, heals, cactuses, units, sword, bow, arrows, units_data,score) = refresh("level_" + str(randint(1, 1)) + ".txt", walls, heals, cactuses, units,
+                                                             sword, bow, arrows, units_data,score)
         pygame.display.update()
         # screen.fill((255, 255, 255))
         screen.blit(bg_im, [0, 0])
@@ -612,12 +614,13 @@ def start_story():
 
 
 
-(walls, heals, cactuses, units, sword, bow, units_data) = build_the_level("level_" + str(randint(6, 6)) + ".txt")
+(walls, heals, cactuses, units, sword, bow, units_data) = build_the_level("level_" + str(randint(1, 6)) + ".txt")
 pygame.display.update()
 clock = pygame.time.Clock()
 finished = False
 while not finished:
     clock.tick(FPS)
+    print(score)
     if place == 'menu':
         start_menu()
     elif place == 'start':

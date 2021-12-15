@@ -68,6 +68,13 @@ mr_1 = pygame.image.load("evil/mr_1.png").convert()
 mr_2 = pygame.image.load("evil/mr_2.png").convert()
 mr_3 = pygame.image.load("evil/mr_3.png").convert()
 
+#Картинки для кактуса и аптечки
+
+cactus_pic = pygame.image.load("cactus/cactus.png").convert()
+cactus_pic.set_colorkey((0, 0, 0))
+heart_pic = pygame.image.load("cactus/heart.png").convert()
+heart_pic.set_colorkey((255, 255, 255))
+
 #Счетчики для пермещений героя
 
 back_counter = 0
@@ -170,5 +177,11 @@ def vis_unit(units):
         elif units[0].orientation == 'right':
             hero_image = right_pic[right_counter]
     screen.blit(hero_image, [units[0].x, units[0].y])
+
+def vis_cactus(cactuses, heals):
+    for i in cactuses:
+        screen.blit(cactus_pic, [i.x, i.y])
+    for i in heals:
+        screen.blit(heart_pic, [i.x, i.y])
 
 

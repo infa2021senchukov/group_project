@@ -153,11 +153,12 @@ class Heal:
         self.h = h
      def stay(self):
         '''будет удалено'''
-        rect(screen, 'green', (self.x, self.y, self.w, self.h))
+        '''rect(screen, 'green', (self.x, self.y, self.w, self.h))'''
      def heal(self,units,heals,j):
          for i in range(len(units)):
-             if units[i].x + units[i].width + units[i].Vx > self.x and units[i].x < self.x + self.w and units[i].y < self.y + self.h and units[i].y + units[i].height > self.y and units[i].hp <= 50:
-                units[i].hp += 40
+             if units[i].x + units[i].width > self.x and units[i].x < self.x + self.w and units[i].y < self.y + self.h and units[i].y + units[i].height > self.y:
+                if units[i].hp <= 50:
+                    units[i].hp += 40
                 heals.remove(heals[j])    
 class Cactus:
      def __init__(self, x, y, w, h):
@@ -167,7 +168,7 @@ class Cactus:
         self.h = h
      def stay(self):
         '''будет удалено'''
-        rect(screen, 'red', (self.x, self.y, self.w, self.h))
+        '''rect(screen, 'red', (self.x, self.y, self.w, self.h))'''
      def sting(self,units,flag, timer):
          for i in range(len(units)):
              if units[i].x + units[i].width + units[i].Vx > self.x and units[i].x < self.x + self.w and units[i].y < self.y + self.h and units[i].y + units[i].height > self.y and flag == False:
@@ -561,12 +562,12 @@ def start_how():
     pygame.display.update()
 
 def start_game():
-    global walls, units, sword, bow, arrows, units_data, flag, timer, finished, tick, place, score
-    heals =[]
-    cactuses= []
+    global walls, units, sword, bow, arrows, units_data, flag, timer, finished, tick, place, score, heals, cactuses
+    '''heals =[]
+    cactuses= []'''
     if units[0].hp <= 0:
         place = 'menu'
-        (walls, heals, cactuses, units, sword, bow, units_data) = build_the_level("level_" + str(randint(1, 6)) + ".txt")
+        (walls, heals, cactuses, units, sword, bow, units_data) = build_the_level("level_" + str(randint(1, 4)) + ".txt")
         arrows = []
     else:
         (flag, timer) = sustain_all(units, walls, arrows, sword, flag, timer)
@@ -593,6 +594,7 @@ def start_game():
         pygame.display.update()
         # screen.fill((255, 255, 255))
         screen.blit(bg_im, [0, 0])
+        vis_cactus(cactuses, heals)
         vis_unit(units)
         vis_evil_create(units)
         vis_evil(units, tick)
@@ -614,7 +616,7 @@ def start_story():
 
 
 
-(walls, heals, cactuses, units, sword, bow, units_data) = build_the_level("level_" + str(randint(1, 6)) + ".txt")
+(walls, heals, cactuses, units, sword, bow, units_data) = build_the_level("level_" + str(randint(4, 4)) + ".txt")
 pygame.display.update()
 clock = pygame.time.Clock()
 finished = False

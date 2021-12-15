@@ -589,7 +589,7 @@ def start_game():
                 units[0].change_weapon()
             elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                 bow.draw()
-        (walls, heals, cactuses, units, sword, bow, arrows, units_data,score) = refresh("level_" + str(randint(1, 1)) + ".txt", walls, heals, cactuses, units,
+        (walls, heals, cactuses, units, sword, bow, arrows, units_data,score) = refresh("level_" + str(randint(1, 4)) + ".txt", walls, heals, cactuses, units,
                                                              sword, bow, arrows, units_data,score)
         pygame.display.update()
         # screen.fill((255, 255, 255))
@@ -616,7 +616,7 @@ def start_story():
 
 
 
-(walls, heals, cactuses, units, sword, bow, units_data) = build_the_level("level_" + str(randint(4, 4)) + ".txt")
+(walls, heals, cactuses, units, sword, bow, units_data) = build_the_level("level_" + str(randint(1, 4)) + ".txt")
 pygame.display.update()
 clock = pygame.time.Clock()
 finished = False

@@ -622,7 +622,6 @@ clock = pygame.time.Clock()
 finished = False
 while not finished:
     clock.tick(FPS)
-    print(score)
     if place == 'menu':
         start_menu()
     elif place == 'start':
